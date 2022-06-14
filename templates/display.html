@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+<div class="row">
+
+<div class="col-12">
+
+<!-- {% if user.artworks %}
+  <h4>Here's your current collection!</h4>
+{% else %}
+<p>
+  <form action="/artwork/add" method="POST">
+  <button class="btn btn-primary" type="submit" >Find some art!</button>
+</form>
+</p>
+
+{% endif %}
+
+<div class="row">
+
+{% for art in user.artworks %}
+<div class="col-2">
+  <p><a href="/artwork/detail/{{art.id}}"><img align='right' width=auto src="{{ art.image_link }}" class="img-fluid img-thumbnail" alt="image of artwork" id="{{art.artwork_id}}"></a></p>
+</div>
+<div class="col-4">
+  <p><a style="text-decoration: none" href="/artwork/detail/{{art.id}}"><span style="font-weight: bold">{{art.title}}</span></a></p>
+</div>
+{% endfor %}
+</div> -->
+
+</div>
+</div>
+</div>
+{% endblock %}
