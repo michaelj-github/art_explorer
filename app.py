@@ -218,6 +218,8 @@ def add_to_collection(artwork_id):
             title=session['title']
             artist=session['artist']
             image=session['image_link']
+            if image == "":
+                image = "https://images.pexels.com/photos/5978717/pexels-photo-5978717.jpeg"
             new_art = Artwork(id=artwork_id, title=title, artist=artist, image_link=image)
             db.session.add(new_art)
             db.session.commit()
@@ -239,16 +241,22 @@ def show_artwork_detail(artwork_id):
         flash("Please login first!", "danger")
         return redirect('/login')
     else:
-        art = requests.get(f"https://collectionapi.metmuseum.org/public/collection/v1/objects/{artwork_id}")
-        jart = art.json()
-        user_art = UserArtwork.query.filter_by(username=session['username'], artwork_id=artwork_id).first()
-        art = Artwork.query.get(artwork_id)
-        if art == None:
-            session['title'] = jart['title']
-            session['artist'] = jart['artistDisplayName']
-            session['image_link'] = jart['primaryImageSmall']
-        user = User.query.get(session['username'])
-        return render_template("artwork_detail.html", artwork_id=artwork_id, jart=jart, user_art=user_art, user=user)
+        try:
+            art = requests.get(f"https://collectionapi.metmuseum.org/public/collection/v1/objects/{artwork_id}")
+            jart = art.json()
+            if jart['primaryImageSmall'] == "":
+                jart['primaryImageSmall'] = "https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg"
+            user_art = UserArtwork.query.filter_by(username=session['username'], artwork_id=artwork_id).first()
+            art = Artwork.query.get(artwork_id)
+            if art == None:
+                session['title'] = jart['title']
+                session['artist'] = jart['artistDisplayName']
+                session['image_link'] = jart['primaryImageSmall']
+            user = User.query.get(session['username'])
+            return render_template("artwork_detail.html", artwork_id=artwork_id, jart=jart, user_art=user_art, user=user)
+        except Exception as e:
+            flash("An unexpected error occurred.", "danger")
+            return redirect(f"/user/{session['username']}")
 
 @app.route("/artwork/fullscreen/<int:artwork_id>")
 def show_artwork_fullscreen(artwork_id):

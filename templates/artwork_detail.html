@@ -22,7 +22,7 @@
 
   <div class="row">
     <div class="col-5">
-      <p><img src="{{ jart.primaryImage }}" class="img-fluid" alt="image of artwork""></p>
+      <p><img src="{{ jart.primaryImageSmall }}" class="img-fluid" alt="image of artwork""></p>
       {% if user_art != None %}
       <form action=" /artwork/removefromcollection/{{artwork_id}}" method="POST">
         <p><button class="btn btn-danger btn-sm">Remove from your collection</button></p>
