@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+
+      {% if user.share == "Yes" %}
+
+      {% if users[1] %}
+
+        <h3>Check out these shared collections:</h3>
+
+        {% for auser in users %}
+
+          {% if auser.username != user.username  %}
+
+          <div class="col-4">
+            <a style="text-decoration: none" href="/sharedcollection/{{auser.username}}"><span style="font-weight: bold">The collection of {{ auser.first_name }} {{ auser.last_name }}</span></a>
+          </div>
+
+          {% endif %}
+
+        {% endfor %}
+
+        {% if user.artworks %}
+
+          <div class="col-4">
+            <a style="text-decoration: none" href="/sharedcollection/{{user.username}}"><span style="font-weight: bold">Your shared collection</span></a>
+          </div>
+
+        {% else %}
+    
+          <h4>You have not added any art to your collection.</h4>
+    
+          <form action="/artwork/add" method="POST">
+            <button class="btn btn-primary" type="submit" >Find some art!</button>
+          </form>
+      
+        {% endif %}
+
+        {% else %}
+
+        <h3>No one else has shared a collection yet.</h3>
+
+        <div class="col-4">
+          <a style="text-decoration: none" href="/sharedcollection/{{user.username}}"><span style="font-weight: bold">Your collection is shared</span></a>
+        </div>
+
+        {% endif %}
+
+      {% else %}
+
+        {% if users %}
+  
+          <h3>Check out these shared collections:</h3>
+  
+          {% for auser in users %}
+
+            <div class="col-4">
+              <a style="text-decoration: none" href="/sharedcollection/{{auser.username}}"><span style="font-weight: bold">The collection of {{ auser.first_name }} {{ auser.last_name }}</span></a>
+            </div>
+
+          {% endfor %}
+
+        {% else %}
+
+          <h3>No one else has shared a collection yet.</h3>
+
+        {% endif %}   
+
+        {% if user.artworks %}
+
+          <h4>Your collection is not shared.</h4>
+          <form action="/collection/share">
+            <input type="hidden" name="share" class="form-control" id="share" placeholder="" value = "{{'Yes'}}">
+            <button class="btn btn-primary btn-sm btn-block" type="submit"> Share your collection</button>
+          </form>
+
+        {% else %}
+
+          <h4>You have not added any art to your collection.</h4>
+          <form action="/artwork/add" method="POST">
+            <button class="btn btn-primary" type="submit" >Find some art!</button>
+          </form>
+          
+        {% endif %}
+
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

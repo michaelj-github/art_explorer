@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+
+  <h1>Search The Metropolitan Museum of Art Collection</h1>
+
+  <form class="form-inline" id="search-form" action="/artworks/search">
+    <input name="search_for" class="form-control" id="search_for" placeholder="Enter a search term to find some works of art and click Search!">
+    <button id="thisButton" class="btn btn-primary" type="submit" onClick="javascript:change();">Search!</button>
+  </form>
+
+  <div class="row mt-3" id="showsList">
+  </div>
+
+</div>
+
+<script>
+  function change() {
+    let e = document.getElementById("thisButton");
+    if (e.innerHTML == "Search!") {
+      e.innerHTML = "Searching ...";
+      e.classList.remove("btn-primary");
+      e.classList.add("btn-info");
+    } else {
+      e.innerHTML = "Search!";
+      e.classList.remove("btn-info");
+      e.classList.add("btn-primary");
+    }
+  }
+</script>
+
+{% endblock %}

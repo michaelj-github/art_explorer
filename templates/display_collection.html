@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+
+      {% if other_user_art %}
+        <h4>Here's the artworks in the collection by {{other_user.first_name}} {{other_user.last_name}}.</h4>
+        {% else %}
+        <h4>{{other_user.first_name}} {{other_user.last_name}} has not added any artworks to a collection yet.</h4>
+      {% endif %}
+
+      <div class="row">
+
+        {% for art in other_user.artworks %}
+
+          <div class="col-2">
+            <p><a href="/artwork/detail/{{art.id}}"><img align='right' width=auto src="{{ art.image_link }}"class="img-fluid img-thumbnail" alt="image of artwork" id="{{art.artwork_id}}"></a></p>
+          </div>
+          <div class="col-4">
+            <p><a style="text-decoration: none" href="/artwork/detail/{{art.id}}"><span style="font-weight: bold">{{art.title}}</span></a></p>
+          </div>
+
+        {% endfor %}
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

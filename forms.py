@@ -24,7 +24,7 @@ class UpdateForm(FlaskForm):
     share = SelectField("Share your collection?", choices=[('Yes', 'Yes. Share my collection with other users.'), ('No', 'No. Do not share my collection.')])
     
 class ChangePasswordForm(FlaskForm):
-    """User update form."""
+    """Change pasword form."""
 
     password = PasswordField("New Password", validators=[InputRequired(), Length(min=6, max=55)])
 

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+
+    <h2 class="join-message">Add or update your comments about this artwork.</h2>
+    <form method="POST" id="user_comments_form">
+      {{ form.hidden_tag() }}
+
+      {% for field in form if field.widget.input_type != 'hidden' %}
+        {% for error in field.errors %}
+          <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+        {{ field(class="form-control") }}
+      {% endfor %}
+
+      <button class="btn btn-primary btn-lg btn-block">Update your comments</button>
+    </form>
+    <br>
+    <div class="row">
+      <div class="col-sm">        
+          <h1>{{ art.title }}</h1>
+          <h2>{{ art.artist }}</h2>      
+      </div>
+    </div>
+
+    <div class="col-sm">
+      <p>
+        <img src="{{ art.image_link }}" class="img-fluid" alt="image of artwork"">
+      </p>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

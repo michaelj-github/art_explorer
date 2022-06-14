@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-9">
+        <h1>{{ jart.title }}</h1>
+        <h2>{{jart.artistDisplayName}}</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-9">
+      {% if user_art == None %}
+      <p><a class="btn btn-primary btn-sm" href="/artwork/addtocollection/{{artwork_id}}">Add to your collection</a></p>
+      {% else %}
+      <p><a class="btn btn-primary btn-sm" href="/artwork/fullscreen/{{artwork_id}}">Full Screen View</a></p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-5">
+      <p><img src="{{ jart.primaryImage }}" class="img-fluid" alt="image of artwork""></p>
+      {% if user_art != None %}
+      <form action=" /artwork/removefromcollection/{{artwork_id}}" method="POST">
+        <p><button class="btn btn-danger btn-sm">Remove from your collection</button></p>
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="col-4 text-wrap text-break">
+
+      {% if jart.department %}
+      <p>Department: {{ jart.department }}</p>
+      {% endif %}
+      <p>{{ jart.creditLine }}</p>
+
+      {% if user_art %}
+
+        {% if user_art.comment %}
+          <h3>Your comments:</h3>
+          <p>{{user_art.comment}}</p>
+          <p><a class="btn btn-primary btn-sm" href="/artwork/editcomments/{{user_art.id}}">Edit your comments</a></p>
+        {% else %}
+          <p><a class="btn btn-primary btn-sm" href="/artwork/editcomments/{{user_art.id}}">You can add some comments about this artwork</a></p>
+        {% endif %}
+
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+  
+{% endblock %}

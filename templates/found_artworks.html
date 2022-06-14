@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+
+{% if art %}
+
+  <div class="row">
+    <h1>Here's some works of art we found using the search term: {{search_for}}</h1>
+    {% if (art|length)==8 %}
+    <p>
+    <form class="form-inline" id="search-form" action="/artworks/search">
+      <input type="hidden" name="search_for" class="form-control" id="search_for" placeholder="" value = "{{search_for}}">
+      <button id="thisButton" class="btn btn-primary" type="submit" onClick="javascript:change();">Find more</button>
+    </form>
+    </p>
+    {% endif %}
+
+    {% for w, id in art %}
+      <div class="col-3">
+          <a href="/artwork/detail/{{id}}"><img src="{{ w }}"class="img-fluid img-thumbnail" alt="image of artwork" id="{{id}}"></a>
+      </div>
+      {% endfor %}
+  </div>
+
+{% else %}
+
+  <h1>We didn't find any works of art using the search term: {{search_for}}</h1>
+
+  <form action="/artwork/add" method="POST">
+    <button class="btn btn-primary btn-sm" type="submit">Try again to find some art!</button>
+  </form><br>
+
+{% endif %}
+
+</div>
+
+<script>
+  function change() {
+    let e = document.getElementById("thisButton");
+    if (e.innerHTML=="Find more") {
+      e.innerHTML = "Searching ...";
+      e.classList.remove("btn-primary");
+      e.classList.add("btn-info");
+    }
+    else {
+      e.innerHTML = "Find more";
+      e.classList.remove("btn-info");
+      e.classList.add("btn-primary");
+    }
+  }
+  </script>
+
+{% endblock %}

@@ -17,9 +17,9 @@
     <ul class="navbar-nav">
       {% if session['username'] %}
       <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-      <!-- <li class="nav-item"><a class="nav-link" href="/artwork/add">Find some art!</a></li>
+      <li class="nav-item"><a class="nav-link" href="/artwork/add">Find some art!</a></li>
       <li class="nav-item"><a class="nav-link" href="/sharedcollections">Shared Collections</a></li>
-      <li class="nav-item"><a class="nav-link" href="/user/{{ user.username }}/update">Your account</a></li> -->
+      <li class="nav-item"><a class="nav-link" href="/user/{{ user.username }}/update">Your account</a></li>
       {% else %}
       <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
       <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
