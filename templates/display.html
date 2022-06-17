@@ -7,7 +7,7 @@
 <div class="col-12">
 
 {% if user.artworks %}
-  <h4>Here's your current collection:</h4>
+  <h4>Here's your current collection. Your collection is # {{ user.collection }}</h4>
 {% else %}
 <p>
 <form action="/artwork/add" method="POST">

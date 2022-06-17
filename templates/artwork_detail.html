@@ -5,8 +5,8 @@
 
   <div class="row">
     <div class="col-9">
-        <h1>{{ jart.title }}</h1>
-        <h2>{{jart.artistDisplayName}}</h2>
+        <h1>{{ art.title }}</h1>
+        <h2>{{art.artist}}</h2>
     </div>
   </div>
 
@@ -22,7 +22,7 @@
 
   <div class="row">
     <div class="col-5">
-      <p><img src="{{ jart.primaryImageSmall }}" class="img-fluid" alt="image of artwork""></p>
+      <p><img src="{{ art.image_link }}" class="img-fluid" alt="image of artwork""></p>
       {% if user_art != None %}
       <form action=" /artwork/removefromcollection/{{artwork_id}}" method="POST">
         <p><button class="btn btn-danger btn-sm">Remove from your collection</button></p>
@@ -32,10 +32,10 @@
 
     <div class="col-4 text-wrap text-break">
 
-      {% if jart.department %}
-      <p>Department: {{ jart.department }}</p>
+      {% if art.department %}
+      <p>Department: {{ art.department }}</p>
       {% endif %}
-      <p>{{ jart.creditLine }}</p>
+      <p>{{ art.creditline }}</p>
 
       {% if user_art %}
 

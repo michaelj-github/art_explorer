@@ -16,7 +16,7 @@
           {% if auser.username != user.username  %}
 
           <div class="col-4">
-            <a style="text-decoration: none" href="/sharedcollection/{{auser.username}}"><span style="font-weight: bold">The collection of {{ auser.first_name }} {{ auser.last_name }}</span></a>
+            <a style="text-decoration: none" href="/sharedcollection/{{auser.username}}"><span style="font-weight: bold">Collection # {{auser.collection}} by {{ auser.first_name[0:1] }}. {{ auser.last_name[0:1] }}.</span></a>
           </div>
 
           {% endif %}
@@ -26,7 +26,7 @@
         {% if user.artworks %}
 
           <div class="col-4">
-            <a style="text-decoration: none" href="/sharedcollection/{{user.username}}"><span style="font-weight: bold">Your shared collection</span></a>
+            <a style="text-decoration: none" href="/sharedcollection/{{user.username}}"><span style="font-weight: bold">Your shared collection # {{ user.collection }}</span></a>
           </div>
 
         {% else %}
@@ -44,7 +44,7 @@
         <h3>No one else has shared a collection yet.</h3>
 
         <div class="col-4">
-          <a style="text-decoration: none" href="/sharedcollection/{{user.username}}"><span style="font-weight: bold">Your collection is shared</span></a>
+          <a style="text-decoration: none" href="/sharedcollection/{{user.username}}"><span style="font-weight: bold">Your collection is shared # {{ user.collection }}</span></a>
         </div>
 
         {% endif %}
@@ -58,7 +58,7 @@
           {% for auser in users %}
 
             <div class="col-4">
-              <a style="text-decoration: none" href="/sharedcollection/{{auser.username}}"><span style="font-weight: bold">The collection of {{ auser.first_name }} {{ auser.last_name }}</span></a>
+              <a style="text-decoration: none" href="/sharedcollection/{{auser.username}}"><span style="font-weight: bold">Collection # {{auser.collection}} by {{ auser.first_name[0:1] }}. {{ auser.last_name[0:1] }}.</span></a>
             </div>
 
           {% endfor %}

@@ -27,9 +27,9 @@
           <span class="text-danger">{{ error }}</span>
         {% endfor %}
         {% if display == 'login' %}
-         {{ field(placeholder=field.label.text, class="form-control") }}
+         {{ field(placeholder=field.label.text, class="form-control mb-2") }}
         {% else %}
-         {{ field(placeholder=field.label.text, class="form-control", autocomplete="new-password") }}
+         {{ field(placeholder=field.label.text, class="form-control mb-2", autocomplete="new-password") }}
         {% endif %}
       {% endfor %}
       {% if display == 'login' %}

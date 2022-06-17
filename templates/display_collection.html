@@ -6,9 +6,9 @@
     <div class="col-12">
 
       {% if other_user_art %}
-        <h4>Here's the artworks in the collection by {{other_user.first_name}} {{other_user.last_name}}.</h4>
+        <h4>Here's the artworks in collection # {{ other_user.collection }} by {{ other_user.first_name[0:1] }}. {{ other_user.last_name[0:1] }}.</h4>
         {% else %}
-        <h4>{{other_user.first_name}} {{other_user.last_name}} has not added any artworks to a collection yet.</h4>
+        <h4>{{ other_user.first_name[0:1] }}. {{ other_user.last_name[0:1] }}. has not added any artworks to a collection yet.</h4>
       {% endif %}
 
       <div class="row">
