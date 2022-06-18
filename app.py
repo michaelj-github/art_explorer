@@ -42,7 +42,7 @@ def register_user():
                 db.session.commit()
             except IntegrityError:
                 form.username.errors.append('There is already an account with that username. Choose another user name or log in if you already have an account.')
-                return render_template('register.html', form=form)
+                return render_template('login_register.html', form=form)
             session['username'] = new_user.username
             session['share'] = new_user.share
             flash('Successfully Created Your Account! Now you can find some art or check out the shared collections.', "success")

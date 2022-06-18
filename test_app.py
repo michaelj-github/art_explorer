@@ -1,5 +1,6 @@
 #  python -m unittest test_app.py
 from flask import session
+from sqlalchemy import exc
 
 from unittest import TestCase
 from models import db, User, Artwork, UserArtwork
@@ -20,13 +21,18 @@ class TestAppTestCase(TestCase):
         db.drop_all()
         db.create_all()
 
+    def tearDown(self):
+        res = super().tearDown()
+        db.session.rollback()
+        return res
+
     def test_home_page_route(self):
         with app.test_client() as client:
             res = client.get('/')
             html = res.get_data(as_text=True)
             self.assertEqual(res.status_code, 200)
             self.assertIn('Log in to your account', html)
-            
+
 ########################################################################
 # User register, login, logout, display, update, change password, delete
 ########################################################################
@@ -34,18 +40,42 @@ class TestAppTestCase(TestCase):
     def test_register_user_route(self):
         """Register a new user"""
         with app.test_client() as client:
-            res = client.post('/register', data={'username': 'testuser'})
+            res = client.post('/register', data={'username': 'testuser', 'password': 'User123U', 'first_name': 'Test', 'last_name': 'User'})
+            self.assertEqual(res.status_code, 302)
+            self.assertEqual(res.location, 'http://localhost/user/testuser')
+
+    def test_register_user_route_redirect(self):
+        """Register a new user"""
+        with app.test_client() as client:
+            res = client.post('/register', data={'username': 'testuser', 'password': 'User123U', 'first_name': 'Test', 'last_name': 'User'}, follow_redirects=True)
             html = res.get_data(as_text=True)
+            user = User.query.get('testuser')
             self.assertEqual(res.status_code, 200)
             self.assertIn('Art Explorer', html)
+            self.assertIn('Successfully Created Your Account! Now you can find some art or check out the shared collections.', html)
+            self.assertEqual(user.username, 'testuser')
+            self.assertEqual(user.first_name, 'Test')
+            self.assertEqual(user.last_name, 'User')
+            self.assertEqual(user.share, 'No')
+
+    def test_register_username_exists(self):
+        """Try to register a new user when username is already in use"""
+        with app.test_client() as client:
+            testuser = User(username='testuser', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="Test", last_name="User", collection=1)
+            db.session.add(testuser)
+            db.session.commit()
+            testuser2 = User(username='testuser', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="Test", last_name="User", collection=1)
+            db.session.add(testuser2)
+            with self.assertRaises(exc.SQLAlchemyError) as context:
+                db.session.commit()
 
     def test_logout_redirect(self):
         """Log out and redirect to root"""
         with app.test_client() as client:
-            res = client.get('/logout')            
+            res = client.get('/logout')
             self.assertEqual(res.status_code, 302)
             self.assertEqual(res.location, 'http://localhost/')
-            
+
     def test_logout_redirect_followed(self):
         """Log out and check the redirect to root"""
         with app.test_client() as client:
@@ -83,7 +113,7 @@ class TestAppTestCase(TestCase):
             html = res.get_data(as_text=True)
             self.assertEqual(res.status_code, 200)
             self.assertIn('<h2 class="join-message">Update your account information.</h2>', html)
-    
+
     def test_change_password(self):
         with app.test_client() as client:
             """Separate page for password update"""
@@ -105,9 +135,8 @@ class TestAppTestCase(TestCase):
             db.session.add(user1)
             db.session.commit()
             res = client.post('/user/username1/delete', data={'username': 'user1'})
-            html = res.get_data(as_text=True)
             self.assertEqual(res.status_code, 302)
-            self.assertEqual(res.location, 'http://localhost/')       
+            self.assertEqual(res.location, 'http://localhost/')
 
     def test_delete_redirect(self):
         with app.test_client() as client:
@@ -141,7 +170,7 @@ class TestAppTestCase(TestCase):
     def test_artwork_add(self):
         with app.test_client() as client:
             """A logged in user can search for artworks"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             db.session.add(user1)
@@ -154,7 +183,7 @@ class TestAppTestCase(TestCase):
     def test_artwork_add_to_collection(self):
         with app.test_client() as client:
             """User can add art to collection"""
-            with client.session_transaction() as change_session:                  
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
                 change_session['title'] = 'title'
                 change_session['artist'] = 'artist'
@@ -166,14 +195,13 @@ class TestAppTestCase(TestCase):
             db.session.add(user1)
             db.session.commit()
             res = client.get('/artwork/addtocollection/12345')
-            html = res.get_data(as_text=True)
             self.assertEqual(res.status_code, 302)
             self.assertEqual(res.location, 'http://localhost/user/user1')
-            
+
     def test_artwork_add_to_collection_redirect(self):
         with app.test_client() as client:
             """Check the redirect"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
                 change_session['title'] = 'title'
                 change_session['artist'] = 'artist'
@@ -192,7 +220,7 @@ class TestAppTestCase(TestCase):
     def test_artwork_detail(self):
         with app.test_client() as client:
             """Display artwork image and details"""
-            with client.session_transaction() as change_session:    
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             db.session.add(user1)
@@ -200,14 +228,14 @@ class TestAppTestCase(TestCase):
             res = client.get('/artwork/detail/10159')
             html = res.get_data(as_text=True)
             self.assertEqual(res.status_code, 200)
-            self.assertIn('<p><a class="btn btn-primary btn-sm" href="/artwork/addtocollection/10159">Add to your collection</a></p>', html)          
+            self.assertIn('<p><a class="btn btn-primary btn-sm" href="/artwork/addtocollection/10159">Add to your collection</a></p>', html)
 
     def test_editcomments(self):
         with app.test_client() as client:
             """User can add or edit comments"""
-            with client.session_transaction() as change_session: 
+            with client.session_transaction() as change_session:
                 username1='user1'
-                change_session['username'] = username1                
+                change_session['username'] = username1
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             art1 = Artwork(id=10159, title='title', artist='artist', image_link='https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg')
             db.session.add_all([user1, art1])
@@ -223,7 +251,7 @@ class TestAppTestCase(TestCase):
     def test_delete_artwork(self):
         with app.test_client() as client:
             """Remove art from collection"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             art1 = Artwork(id=10159, title='title', artist='artist', image_link='https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg')
@@ -233,14 +261,13 @@ class TestAppTestCase(TestCase):
             db.session.add(userart1)
             db.session.commit()
             res = client.post('/artwork/removefromcollection/10159', data={'username': 'user1', 'artwork_id': 10159})
-            html = res.get_data(as_text=True)
             self.assertEqual(res.status_code, 302)
             self.assertEqual(res.location, 'http://localhost/user/user1')
 
     def test_delete_artwork_redirect(self):
         with app.test_client() as client:
             """Check the redirect"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             art1 = Artwork(id=10159, title='title', artist='artist', image_link='https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg')
@@ -249,7 +276,7 @@ class TestAppTestCase(TestCase):
             userart1 = UserArtwork(username='user1', artwork_id=10159)
             db.session.add(userart1)
             db.session.commit()
-            res = client.post('/artwork/removefromcollection/10159', data={'username': 'user1', 'artwork_id': 10159}, follow_redirects=True)            
+            res = client.post('/artwork/removefromcollection/10159', data={'username': 'user1', 'artwork_id': 10159}, follow_redirects=True)
             html = res.get_data(as_text=True)
             self.assertEqual(res.status_code, 200)
             self.assertIn('<button class="btn btn-primary" type="submit" >Find some art!</button>', html)
@@ -261,7 +288,7 @@ class TestAppTestCase(TestCase):
     def test_sharedcollection_no(self):
         with app.test_client() as client:
             """A user may have shared a collection with no artworks in it"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             user2 = User(username='user2', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="Two", share='Yes', collection=2)
@@ -275,7 +302,7 @@ class TestAppTestCase(TestCase):
     def test_sharedcollection_yes(self):
         with app.test_client() as client:
             """A user may have shared a collection with artworks in it"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             user2 = User(username='user2', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="Two", share='Yes', collection=2)
@@ -293,7 +320,7 @@ class TestAppTestCase(TestCase):
     def test_sharedcollections_both_shared(self):
         with app.test_client() as client:
             """The logged in user and at least one other user have shared their collections"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='Yes', collection=1)
             user2 = User(username='user2', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="Two", share='Yes', collection=2)
@@ -310,18 +337,18 @@ class TestAppTestCase(TestCase):
             self.assertIn("<h3>Check out these shared collections:</h3>", html)
             self.assertIn('<span style="font-weight: bold">Collection # 2 by U. T.</span>', html)
             self.assertIn("Your shared collection # 1", html)
-            
+
     def test_sharedcollections_you_shared(self):
         with app.test_client() as client:
             """The logged in user has shared their collection but no one else has"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='Yes', collection=1)
             user2 = User(username='user2', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="Two", share='No', collection=2)
             art1 = Artwork(id=10159, title='title', artist='artist', image_link='https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg')
             db.session.add_all([user1, user2, art1])
             db.session.commit()
-            userart1 = UserArtwork(username='user1', artwork_id=10159)            
+            userart1 = UserArtwork(username='user1', artwork_id=10159)
             userart2 = UserArtwork(username='user2', artwork_id=10159)
             db.session.add(userart1, userart2)
             db.session.commit()
@@ -336,14 +363,14 @@ class TestAppTestCase(TestCase):
     def test_sharedcollections_they_shared(self):
         with app.test_client() as client:
             """The logged in user has not shared their collection but at least one other user has"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             user2 = User(username='user2', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="Two", share='Yes', collection=2)
             art1 = Artwork(id=10159, title='title', artist='artist', image_link='https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg')
             db.session.add_all([user1, user2, art1])
             db.session.commit()
-            userart1 = UserArtwork(username='user1', artwork_id=10159)            
+            userart1 = UserArtwork(username='user1', artwork_id=10159)
             userart2 = UserArtwork(username='user2', artwork_id=10159)
             db.session.add(userart1, userart2)
             db.session.commit()
@@ -358,14 +385,14 @@ class TestAppTestCase(TestCase):
     def test_sharedcollections_neither_shared(self):
         with app.test_client() as client:
             """No users have shared their collections"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             user2 = User(username='user2', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="Two", share='No', collection=2)
             art1 = Artwork(id=10159, title='title', artist='artist', image_link='https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg')
             db.session.add_all([user1, user2, art1])
             db.session.commit()
-            userart1 = UserArtwork(username='user1', artwork_id=10159)            
+            userart1 = UserArtwork(username='user1', artwork_id=10159)
             userart2 = UserArtwork(username='user2', artwork_id=10159)
             db.session.add(userart1, userart2)
             db.session.commit()
@@ -382,13 +409,13 @@ class TestAppTestCase(TestCase):
     def test_sharedcollections_you_have_no_art(self):
         with app.test_client() as client:
             """The logged in user has no art in their collection"""
-            with client.session_transaction() as change_session:                
+            with client.session_transaction() as change_session:
                 change_session['username'] = 'user1'
             user1 = User(username='user1', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="One", share='No', collection=1)
             user2 = User(username='user2', password="$2b$12$It03ox3R80KNrj1FL3tJf.0aWmNAy93xnp4DG2ZgjipFE.t3vlAH2", first_name="User", last_name="Two", share='No', collection=2)
             art1 = Artwork(id=10159, title='title', artist='artist', image_link='https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg')
             db.session.add_all([user1, user2, art1])
-            db.session.commit()            
+            db.session.commit()
             userart2 = UserArtwork(username='user2', artwork_id=10159)
             db.session.add(userart2)
             db.session.commit()

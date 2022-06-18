@@ -13,9 +13,9 @@
 
 "https://metmuseum.github.io/"
 
-### Here is the link to the deployed app. Check it out. I hope you like it
+### Here is the link to the deployed app. Check it out. I hope you like it. Feedback is appreciated.
 
-"https://artexplorer2022-06-13-01.herokuapp.com/"
+"https://artexplorer.herokuapp.com/"
 
 ### Art Explorer is an app for art lovers to use to explore The Metropolitan Museum of Art Collection
 
@@ -32,7 +32,10 @@
 - View the collections shared by other art lovers
 - Remove art from your collection if you want
 
-Is is necessary to create an account to use the app but only a username, first name, and last name are required, no API key is needed
+### Notes
+
+- It is necessary to create an account to use the app but only a username, first name, and last name are required, no API key is needed
+- No password reset feature is included. A user can change their password but forgotten passwords must be reset by a db admin
 
 ### Tech Stack Used
 
@@ -48,9 +51,20 @@ Is is necessary to create an account to use the app but only a username, first n
 
 see the requirement.txt file for details of versions needed for venv
 
-### ERD and DB Schema can be found here
+### For testing
+
+#### run python -m unittest test_app.py
+
+### ERD and DB Schema
+
+<!-- markdownlint-disable -->
+<img src="art_explorer erd.png">
+<img src="art_explorer schema.png">
+<!-- markdownlint-restore -->
 
 ### In The Future
 
 - Tools to filter, sort, and categorize your collection as is grows larger
+- Filters for seaching by department, etc.
+- Get additional information from the museum website that is not available via the API
 - More museums to explore!
