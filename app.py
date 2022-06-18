@@ -212,7 +212,7 @@ def add_to_collection(artwork_id):
             image=session['image_link']
             image_full=session['image_link_full']
             if image == "":
-                image = "https://images.pexels.com/photos/5978717/pexels-photo-5978717.jpeg"
+                image = "https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg"
             new_art = Artwork(id=artwork_id, title=title, artist=artist, department=department, creditline=creditline, image_link=image, image_link_full=image_full)
             db.session.add(new_art)
             db.session.commit()
