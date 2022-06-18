@@ -213,6 +213,8 @@ def add_to_collection(artwork_id):
             image_full=session['image_link_full']
             if image == "":
                 image = "https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg"
+            if image_full == "":
+                image_full = "https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg"
             new_art = Artwork(id=artwork_id, title=title, artist=artist, department=department, creditline=creditline, image_link=image, image_link_full=image_full)
             db.session.add(new_art)
             db.session.commit()
@@ -359,6 +361,8 @@ def get_the_art(artwork_id):
             jart = get_art.json()
             if jart['primaryImageSmall'] == "":
                 jart['primaryImageSmall'] = "https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg"
+            if jart['primaryImage'] == "":
+                jart['primaryImage'] = "https://images.metmuseum.org/CRDImages/eg/web-large/Images-Restricted.jpg"
             session['title'] = jart['title']
             session['artist'] = jart['artistDisplayName']
             session['department'] = jart['department']
