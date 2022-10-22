@@ -17,6 +17,10 @@
 
 "https://artexplorer.herokuapp.com/"
 
+Since the future of heroku is uncertain, this app is also deployed for now on Qoddi at this link
+
+"http://zyvohaibwm.us15.qoddiapp.com/"
+
 ### Art Explorer is an app for art lovers to use to explore The Metropolitan Museum of Art Collection
 
 ### User Flow
