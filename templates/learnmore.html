@@ -1,0 +1,68 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container">
+  <div
+    class="fixed-bottom d-flex aligns-items-center justify-content-center"
+    style="height: 75%"
+  >
+    <div>
+      <div class="row">
+        <h1>Art Explorer</h1>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="fixed-bottom d-flex aligns-items-center justify-content-center"
+    style="height: 60%"
+  >
+    <div class="row">
+      <div class="col-2">
+        <p></p>
+      </div>
+      <div class="col-8">
+        <p>
+          Art Explorer is an app for art lovers to use to find and share images
+          of works of art from The Metropolitan Museum of Art. Register for an
+          account now to start exploring or log in if you already have an
+          account. Have fun!
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="fixed-bottom d-flex aligns-items-center justify-content-center"
+    style="height: 40%"
+  >
+    <div>
+      <a href="/login" class="btn btn-primary btn-md m-3"
+        >Log in to your account</a
+      >
+      <!-- <span class="fs-3 fw-bold primary">or</span> -->
+      <a href="/register" class="font-bold btn btn-primary btn-md m-3"
+        >Register for an account</a
+      >
+    </div>
+  </div>
+
+  <div
+    class="fixed-bottom d-flex aligns-items-center justify-content-center"
+    style="height: 30%"
+  >
+    <p class="d-flex aligns-items-center justify-content-center">
+      <small>Try Username: "demo", Password: "fordemo"</small>
+    </p>
+  </div>
+
+  <div
+    class="fixed-bottom d-flex aligns-items-center justify-content-center"
+    style="height: 25%"
+  >
+    <p class="d-flex aligns-items-center justify-content-center">
+      <a href="/">Home</a>
+    </p>
+  </div>
+</div>
+
+{% endblock %}

@@ -60,6 +60,11 @@ def home_page():
     else:
         return redirect(f"/user/{session['username']}")
 
+@app.route('/learnmore')
+def learnmore_page():
+    """Reroute to display the information about this app."""
+    return render_template('learnmore.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login_user():
     """A user can login to an account."""
@@ -279,8 +284,11 @@ def update_comments(user_art_id):
         form = UpdateComments(obj=user_art)
         if form.validate_on_submit():
             user_art.comment = form.comment.data
-            db.session.commit()
-            flash('Successfully Updated Your Comments!', "success")
+            if session['username'] != "demo":
+                db.session.commit()
+                flash('Successfully Updated Your Comments!', "success")
+            else:
+                flash('Register for an account to add comments!', "success")
             return redirect(f"/artwork/detail/{user_art.artwork_id}")
         return render_template('update_comments.html', form=form, user=user, art=art)
 

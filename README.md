@@ -5,7 +5,7 @@
 ### Objectives
 
 - Build a database-driven website
-- Utilize a publically available API
+- Utilize a publicly available API
 - Incorporate front-end and back-end technologies to demonstrate the skills learned in the program to-date
 - Create something cool!
 
@@ -13,7 +13,7 @@
 
 "https://metmuseum.github.io/"
 
-### Here is the link to the deployed app. Check it out. I hope you like it. Feedback is appreciated.
+### Here is the link to the deployed app. Check it out. I hope you like it. Feedback is appreciated
 
 "https://artexplorer.herokuapp.com/"
 
@@ -43,7 +43,7 @@
 - Flask
 - SQLAlchemy
 - WTForms
-- PostgresSQL
+- PostgreSQL
 - Bootstrap 5
 - Bcrypt for passwords
 - HTML/CSS/JavaScript for the front-end
